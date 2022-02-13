@@ -84,8 +84,8 @@ var processJob = function (op) { return __awaiter(void 0, void 0, void 0, functi
         }
     });
 }); };
-// consumeAndDie()
-myFirstQueue.process(function (job, done) {
-    console.log('Received message', job.data);
-    done();
-});
+consumeAndDie();
+// myFirstQueue.process(function (job, done) {
+//     console.log('Received message', job.data);
+//     done();
+//   });
