@@ -41,7 +41,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var bull_1 = __importDefault(require("bull"));
 var process_1 = __importDefault(require("process"));
-var myFirstQueue = new bull_1.default('Operations-queue');
+var myFirstQueue = new bull_1.default('Operations-queue1', { defaultJobOptions: { removeOnComplete: true, removeOnFail: true } });
 var consumeAndDie = function () { return __awaiter(void 0, void 0, void 0, function () {
     var nextJob;
     return __generator(this, function (_a) {
@@ -51,14 +51,22 @@ var consumeAndDie = function () { return __awaiter(void 0, void 0, void 0, funct
                 return [4 /*yield*/, myFirstQueue.getNextJob()];
             case 1:
                 nextJob = _a.sent();
-                if (!nextJob) return [3 /*break*/, 3];
-                console.info('I am processing a task ' + process_1.default.pid);
+                if (!nextJob) return [3 /*break*/, 4];
                 return [4 /*yield*/, processJob(nextJob.data)];
             case 2:
                 _a.sent();
-                process_1.default.exit(0);
-                _a.label = 3;
-            case 3: return [2 /*return*/];
+                return [4 /*yield*/, nextJob.moveToCompleted('succeeded', true)];
+            case 3:
+                _a.sent();
+                return [3 /*break*/, 7];
+            case 4: return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 1000); })];
+            case 5:
+                _a.sent();
+                return [4 /*yield*/, consumeAndDie()];
+            case 6:
+                _a.sent();
+                _a.label = 7;
+            case 7: return [2 /*return*/];
         }
     });
 }); };
@@ -71,8 +79,13 @@ var processJob = function (op) { return __awaiter(void 0, void 0, void 0, functi
             case 1:
                 _a.sent();
                 console.info('done working on %o', { id: op.id, data: op.operationData });
+                process_1.default.exit(0);
                 return [2 /*return*/];
         }
     });
 }); };
-consumeAndDie();
+// consumeAndDie()
+myFirstQueue.process(function (job, done) {
+    console.log('Received message', job.data);
+    done();
+});

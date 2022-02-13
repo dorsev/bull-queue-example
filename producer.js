@@ -40,9 +40,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var bull_1 = __importDefault(require("bull"));
-var operationsQueue = new bull_1.default('Operations-queue');
-var ops = Array(100 + 1).fill(0).map(function (x) {
-    return { id: x, operationData: "working on " + x };
+var operationsQueue = new bull_1.default('Operations-queue1');
+var ops = Array(100 + 1).fill(0).map(function (x, i) {
+    return { id: i, operationData: "working on " + i };
 });
 var produce = function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
@@ -50,9 +50,12 @@ var produce = function () { return __awaiter(void 0, void 0, void 0, function ()
             var job;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, operationsQueue.add(op)];
+                    case 0:
+                        console.info('IM adding a task %o', { op: op });
+                        return [4 /*yield*/, operationsQueue.add(op)];
                     case 1:
                         job = _a.sent();
+                        console.info('finished adding a task %o', { job: job.data });
                         return [2 /*return*/];
                 }
             });

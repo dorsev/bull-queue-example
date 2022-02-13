@@ -1,0 +1,63 @@
+# The entire internet:
+node_modules
+
+# Editors
+.idea
+*.iml
+*.swp
+*~
+.history/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# test & results
+junit.xml
+/coverage
+/reports
+packages/*/coverage
+packages/*/reports
+packages/cypress/videos
+packages/cypress/screenshots
+packages/cypress/results
+
+# jest
+.jest_cache
+
+# log files
+*.log
+*.out
+logs
+
+.eslintcache
+
+# config
+.env.local
+.env.*.local
+.envrc
+
+.*.cache
+
+# https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+
+# generated and transpiled code
+packages/*/**/gen
+packages/*/**/generated
+packages/*/dist
+
+# misc
+.dynamodb
+packages/*/report*.json
+build
+storybook-static
+out*
+
+# serverless
+.serverless/
+.webpack/
