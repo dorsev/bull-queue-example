@@ -1,8 +1,8 @@
 import Bull, { Job, DoneCallback } from 'bull'
 import { Operation } from './Operation';
 
-const operationsQueue = new Bull('Operations-queue4');
-const ops = Array(100 + 1).fill(0).map((x, i) => {
+const operationsQueue = new Bull('Operations-queue6');
+const ops = Array(3).fill(0).map((x, i) => {
     return ({ id: i, operationData: `working on ${i}`} as Operation)
 })
 const produce = async () : Promise<void> => {

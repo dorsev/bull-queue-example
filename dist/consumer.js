@@ -41,13 +41,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var bull_1 = __importDefault(require("bull"));
 var process_1 = __importDefault(require("process"));
-var myFirstQueue = new bull_1.default('Operations-queue4', { defaultJobOptions: { removeOnComplete: true, removeOnFail: true } });
+var CONCURRENT_PROCESSING = 10;
+var JOB_TIMEOUT_MILI = 30 * 60 * 1000;
+var LOCK_DURATION_TIME = 2 * 60 * 1000;
+var myFirstQueue = new bull_1.default('Operations-queue6', {
+    settings: {
+        lockDuration: LOCK_DURATION_TIME,
+    },
+    defaultJobOptions: {
+        timeout: JOB_TIMEOUT_MILI,
+        removeOnComplete: true,
+        removeOnFail: true
+    }
+});
 var consumer = function (job, done) {
     var data = job.data;
     processJob(data).then(function (x) {
         done();
     }).catch(function (e) { return done(e); })
-        .then(function (x) { return process_1.default.exit(0); });
+        .then(function (x) {
+        console.info('Game over');
+        process_1.default.exit(0);
+    });
 };
 var consumeAndDie = function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
@@ -68,7 +83,6 @@ var processJob = function (op) { return __awaiter(void 0, void 0, void 0, functi
             case 1:
                 _a.sent();
                 console.info('done working on %o', { id: op.id, data: op.operationData });
-                process_1.default.exit(0);
                 return [2 /*return*/];
         }
     });
