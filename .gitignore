@@ -1,6 +1,8 @@
 # The entire internet:
 node_modules
-
+dist
+dist/**
+dist/*
 # Editors
 .idea
 *.iml
