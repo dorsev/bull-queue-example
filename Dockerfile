@@ -6,4 +6,6 @@ RUN npm install typescript
 COPY . /app
 RUN ./node_modules/typescript/bin/tsc  --init
 RUN ./node_modules/typescript/bin/tsc 
+COPY /dist /app
 CMD node consumer.js
+EXPOSE 6379

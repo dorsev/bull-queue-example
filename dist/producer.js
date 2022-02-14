@@ -40,7 +40,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var bull_1 = __importDefault(require("bull"));
-var operationsQueue = new bull_1.default('Operations-queue1');
+var operationsQueue = new bull_1.default('Operations-queue4');
 var ops = Array(100 + 1).fill(0).map(function (x, i) {
     return { id: i, operationData: "working on " + i };
 });

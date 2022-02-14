@@ -1,7 +1,7 @@
 import Bull, { Job, DoneCallback } from 'bull'
 import { Operation } from './Operation';
 
-const operationsQueue = new Bull('Operations-queue1');
+const operationsQueue = new Bull('Operations-queue4');
 const ops = Array(100 + 1).fill(0).map((x, i) => {
     return ({ id: i, operationData: `working on ${i}`} as Operation)
 })

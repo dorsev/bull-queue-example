@@ -41,33 +41,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var bull_1 = __importDefault(require("bull"));
 var process_1 = __importDefault(require("process"));
-var myFirstQueue = new bull_1.default('Operations-queue1', { defaultJobOptions: { removeOnComplete: true, removeOnFail: true } });
+var myFirstQueue = new bull_1.default('Operations-queue4', { defaultJobOptions: { removeOnComplete: true, removeOnFail: true } });
+var consumer = function (job, done) {
+    var data = job.data;
+    processJob(data).then(function (x) {
+        done();
+    }).catch(function (e) { return done(e); })
+        .then(function (x) { return process_1.default.exit(0); });
+};
 var consumeAndDie = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var nextJob;
     return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                console.info('I am up and running ' + process_1.default.pid);
-                return [4 /*yield*/, myFirstQueue.getNextJob()];
-            case 1:
-                nextJob = _a.sent();
-                if (!nextJob) return [3 /*break*/, 4];
-                return [4 /*yield*/, processJob(nextJob.data)];
-            case 2:
-                _a.sent();
-                return [4 /*yield*/, nextJob.moveToCompleted('succeeded', true)];
-            case 3:
-                _a.sent();
-                return [3 /*break*/, 7];
-            case 4: return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 1000); })];
-            case 5:
-                _a.sent();
-                return [4 /*yield*/, consumeAndDie()];
-            case 6:
-                _a.sent();
-                _a.label = 7;
-            case 7: return [2 /*return*/];
-        }
+        console.info('I am up and running ' + process_1.default.pid);
+        myFirstQueue.process(1, consumer).catch(function (e) {
+            console.info('failed to define processing function for operation queue %s, with error %o', process_1.default.pid, e);
+        });
+        console.info('I died');
+        return [2 /*return*/];
     });
 }); };
 var processJob = function (op) { return __awaiter(void 0, void 0, void 0, function () {
@@ -75,7 +64,7 @@ var processJob = function (op) { return __awaiter(void 0, void 0, void 0, functi
         switch (_a.label) {
             case 0:
                 console.info('Im working on %o', { id: op.id, data: op.operationData });
-                return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 1000 * 10); })];
+                return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 1000 * 50); })];
             case 1:
                 _a.sent();
                 console.info('done working on %o', { id: op.id, data: op.operationData });
