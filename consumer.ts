@@ -1,10 +1,10 @@
-import Bull, { Job, DoneCallback, Queue } from 'bull'
+import Bull, { Job, DoneCallback, Queue, ProcessPromiseFunction } from 'bull'
 import { Operation } from './Operation';
 import process from 'process'
 
 const LOCK_DURATION_TIME = 2 * 60 * 1000
 
-const myFirstQueue = new Bull('Operations-queue16', { 
+const myFirstQueue = new Bull('Operations-queue18', { 
     settings: {
         lockDuration: LOCK_DURATION_TIME,
         maxStalledCount: 0,
@@ -20,19 +20,33 @@ myFirstQueue.on('completed', (job) => {
     console.info('I am here %o', { start: job.timestamp, processTime: job.processedOn, finished: job.finishedOn})
 })
 let hasProcessedJob = false
+function getRandomInt(max: number): number {
+    return Math.floor(Math.random() * max);
+  }
+export const taskConsumer = async (job: Job<Operation>): Promise<void> => {
+    const data: Operation = job.data
+
+    await processJob(data)
+
+    const randomSleep = getRandomInt(10)
+    console.info(`Game over.. waiting for ${randomSleep} seconds`);
+    await new Promise(resolve => setTimeout(resolve, randomSleep * 1000));
+    console.info('wait is over');
+    myFirstQueue.close(true)
+    process.exit(1)
+    return
+}
+
 const consumer = (job: Job, done: DoneCallback): void => { 
     const data: Operation = job.data
-    if (hasProcessedJob) {
-        return
-    }
-    hasProcessedJob = true
     myFirstQueue.close(false)
     processJob(data).then(x => {
         done()
     }).catch(e => done(e))
     .then(async x => { 
-        console.info('Game over.. waiting for 3 seconds');
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        const random = getRandomInt(100)
+        console.info(`Game over.. waiting for ${random} seconds`);
+        await new Promise(resolve => setTimeout(resolve, random * 1000));
         console.info('wait is over');
         myFirstQueue.close(true)
         process.exit(1)
@@ -58,7 +72,7 @@ const consumeAndDie = async () : Promise<void> => {
 
 const processJob = async (op: Operation): Promise<void> => {
     console.info('Im working on %o', { id: op.id, data: op.operationData })
-    await new Promise(resolve => setTimeout(resolve, 100*1000))
+    await new Promise(resolve => setTimeout(resolve, 1*1000))
     console.info('done working on %o', { id: op.id, data: op.operationData })
 }
 
